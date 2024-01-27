@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from util import haversine, LatLon, Query
+from call_mapbox import search
 
 plt.style.use("ggplot")
 
@@ -51,7 +52,7 @@ def compute_points(point: LatLon, dist: float = 3, N: int = 6) -> list[Query]:
     a.set_title(f"Dist(Hav) {sum_dist:>.3f}")
     a.scatter(seqLon, seqLat, marker="o")
     plt.tight_layout()
-    plt.show()
+    plt.savefig("example-circle.png")
     plt.close()
 
     return ret_points, ret_query
@@ -99,4 +100,20 @@ if __name__ == "__main__":
     points, queries = compute_points(point_tokyo_tower, dist=3, N=10)
 
     # データをgithubで可視化するためのgeojsonつくり
-    draw_geojson(points, queries, fn="geojson/sample.geojson")
+    # draw_geojson(points, queries, fn="geojson/sample.geojson")
+
+    # 可視化する (w/ query)
+    seq_latlons = []
+    for q in queries:
+        ret = search(q.src, q.dst)
+        seq_latlons.append(ret)
+
+    f = plt.figure()
+    a = plt.gca()
+    for ret in seq_latlons:
+        a.plot([p.lon for p in ret], [p.lat for p in ret], color="k", lw=2)
+    a.scatter([p.lon for p in points], [p.lat for p in points], marker="o")
+    plt.tight_layout()
+    plt.savefig("example.png")
+    plt.show()
+    plt.close()
