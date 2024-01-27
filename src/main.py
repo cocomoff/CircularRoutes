@@ -58,7 +58,7 @@ def compute_points(point: LatLon, dist: float = 3, N: int = 6) -> list[Query]:
     return ret_points, ret_query
 
 
-def draw_geojson(points: list[LatLon], queries: list[Query], fn: str) -> None:
+def _prepare_point(points):
     geojson = {"type": "FeatureCollection", "features": []}
 
     # 地点はPoint
@@ -72,6 +72,12 @@ def draw_geojson(points: list[LatLon], queries: list[Query], fn: str) -> None:
             "geometry": {"type": "Point", "coordinates": [point.lon, point.lat]},
         }
         geojson["features"].append(f)
+
+    return geojson
+
+
+def draw_geojson(points: list[LatLon], queries: list[Query], fn: str) -> None:
+    geojson = _prepare_point(points)
 
     # クエリする直線はLineString
     for query in queries:
@@ -95,6 +101,32 @@ def draw_geojson(points: list[LatLon], queries: list[Query], fn: str) -> None:
         json.dump(geojson, fp)
 
 
+def draw_geojson_routes(
+    points: list[LatLon], seq_latlons: list[LatLon], fn: str
+) -> None:
+    geojson = _prepare_point(points)
+
+    # APIで作ったseq_latlonsを1つのLineStringとみなす
+    coords = []
+    for ret in seq_latlons:
+        for p in ret:
+            coords.append([p.lon, p.lat])
+    geojson["features"].append(
+        {
+            "type": "Feature",
+            "properties": {
+                "stroke": "#0000FF",
+                "stroke-width": 2,
+            },
+            "geometry": {"type": "LineString", "coordinates": coords},
+        }
+    )
+
+    # 出力
+    with open(fn, "w") as fp:
+        json.dump(geojson, fp)
+
+
 if __name__ == "__main__":
     point_tokyo_tower = LatLon(35.658581, 139.745433)
     points, queries = compute_points(point_tokyo_tower, dist=3, N=10)
@@ -107,6 +139,8 @@ if __name__ == "__main__":
     for q in queries:
         ret = search(q.src, q.dst)
         seq_latlons.append(ret)
+
+    draw_geojson_routes(points, seq_latlons, fn="geojson/sample-route.geojson")
 
     f = plt.figure()
     a = plt.gca()
