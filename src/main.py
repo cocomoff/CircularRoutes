@@ -1,3 +1,4 @@
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 from util import haversine, LatLon, Query
@@ -57,7 +58,40 @@ def compute_points(point: LatLon, dist: float = 3, N: int = 6) -> list[Query]:
 
 
 def draw_geojson(points: list[LatLon], queries: list[Query], fn: str) -> None:
-    pass
+    geojson = {"type": "FeatureCollection", "features": []}
+
+    # 地点はPoint
+    for point in points:
+        f = {
+            "type": "Feature",
+            "properties": {
+                "marker-color": "#000000",
+                "marker-size": "medium",
+            },
+            "geometry": {"type": "Point", "coordinates": [point.lon, point.lat]},
+        }
+        geojson["features"].append(f)
+
+    # クエリする直線はLineString
+    for query in queries:
+        point1 = query.src
+        point2 = query.dst
+        f = {
+            "type": "Feature",
+            "properties": {
+                "stroke": "#0000FF",
+                "stroke-width": 2,
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[point1.lon, point1.lat], [point2.lon, point2.lat]],
+            },
+        }
+        geojson["features"].append(f)
+
+    # 出力
+    with open(fn, "w") as fp:
+        json.dump(geojson, fp)
 
 
 if __name__ == "__main__":
