@@ -18,19 +18,13 @@
   - 簡単実装: 中心点の周りに点を打ち、間の経路を探す
   - 間の経路はDirectionsAPI (e.g., Mapbox) で探す
     - API KEYは `./src/API_KEY.py` に置く (中身: `MAPBOX_API_KEY=XXXXXXX`)
-
-#### geojsonの可視化例
+- 円上の頂点をgithubの機能で可視化したもの
 
 ![例の画像](outputs/vis-example.png)
 
 
-#### Matplotlibの可視化
+- Matplotlibでの可視化 (円上の点、経路)
 
-- 円上に点を打つ
-
-![例の画像(円)](outputs/example-circle.png)
-
-
-- 個別で経路を問い合わせる
-
-![例の画像(経路)](output/sexample.png)
+| 円上の点 | 経路 |
+| -- | -- |
+| ![例の画像(円)](outputs/example-circle.png) | ![例の画像(経路)](output/sexample.png) |
