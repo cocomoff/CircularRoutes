@@ -27,4 +27,4 @@
 
 | 円上の点 | 経路 |
 | -- | -- |
-| ![例の画像(円)](outputs/example-circle.png) | ![例の画像(経路)](output/sexample.png) |
+| ![例の画像(円)](outputs/example-circle.png) | ![例の画像(経路)](outputs/example.png) |
